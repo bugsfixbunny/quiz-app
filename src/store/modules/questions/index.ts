@@ -33,11 +33,13 @@ export const questionReducer = createSlice({
   name: 'question',
   initialState,
   reducers: {
-    submitAnswer: (state, action) => {
-      state.answers[state.current] = action.payload;
+    setAnswer: (state, action) => {
+      state.answers = [...state.answers, action.payload];
       state.current += 1;
-
-      if (state.current === state.questions.length) state.current = 0;
+    },
+    resetAnswer: (state) => {
+      state.answers = [];
+      state.current = 0;
     },
   },
   extraReducers: (builder) => {
@@ -81,27 +83,21 @@ export const selectError = createSelector(
   (state) => state.error,
 );
 
-export const getResult = createSelector(selectQuestion, (state) => {
-  const { questions, answers } = state;
-  let correctAnswerCount = 0;
-  let incorrectAnswerCount = 0;
-  const correctness = questions.map((question: Question, index: number) => {
-    const correct_answer = question['correct_answer'] === 'True' ? true : false;
-    if (correct_answer === answers[index]) {
-      correctAnswerCount++;
-      return true;
-    } else {
-      incorrectAnswerCount++;
-      return false;
-    }
-  });
-  return {
-    correctAnswerCount,
-    incorrectAnswerCount,
-    correctness,
-  };
+export const selectAnswers = createSelector(
+  selectQuestion,
+  (state) => state.answers,
+);
+
+export const selectScore = createSelector(selectQuestion, (state) => {
+  let score = 0;
+  const len = state.questions.length;
+  for (let i = 0; i < len; i++) {
+    const correct_answer = state.questions[i].correct_answer === 'True';
+    if (correct_answer === state.answers[i]) score++;
+  }
+  return score;
 });
 
-export const { submitAnswer } = questionReducer.actions;
+export const { setAnswer, resetAnswer } = questionReducer.actions;
 
 export default questionReducer.reducer;

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
+import Layout from './layouts';
 import { useStoreDispatch } from './store/hook';
 import { getQuestionList } from './store/modules/questions';
 
@@ -15,9 +16,11 @@ function App() {
   }, []);
   return (
     <div className="container mx-auto h-full">
-      <BrowserRouter>
-        <Routes />
-      </BrowserRouter>
+      <Layout>
+        <BrowserRouter>
+          <Routes />
+        </BrowserRouter>
+      </Layout>
     </div>
   );
 }
